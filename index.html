@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="멘탈케어 앱 AI 코치 고도화 및 UI 개선 개발 — 프로젝트 제안서" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['SUIT Variable', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace']
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              600: '#0284c7',
+              700: '#0369a1'
+            }
+          },
+          boxShadow: {
+            soft: '0 10px 30px -18px rgba(15, 23, 42, 0.35)'
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root { color-scheme: light; font-size: 16px; }
+    body {
+      font-family: 'SUIT Variable', sans-serif;
+      font-size: 1rem;
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(14, 165, 233, 0.08), transparent 42%),
+        radial-gradient(circle at 88% 82%, rgba(2, 132, 199, 0.06), transparent 48%);
+    }
+    .doc-content h1, .doc-content h2, .doc-content h3, .doc-content h4 {
+      color: rgb(15 23 42); font-weight: 700; letter-spacing: -0.01em;
+      line-height: 1.3; margin-top: 1.6em; margin-bottom: 0.7em;
+    }
+    .doc-content h1 { font-size: 2rem; margin-top: 0.2em; }
+    .doc-content h2 { font-size: 1.4rem; }
+    .doc-content h3 { font-size: 1.15rem; }
+    .doc-content p, .doc-content li {
+      color: rgb(51 65 85); line-height: 1.8; font-size: 1rem;
+    }
+    .doc-content p, .doc-content ul, .doc-content ol,
+    .doc-content table, .doc-content pre, .doc-content blockquote {
+      margin-bottom: 1rem;
+    }
+    .doc-content ul, .doc-content ol { padding-left: 1.2rem; }
+    .doc-content ul { list-style: disc; }
+    .doc-content ol { list-style: decimal; }
+    .doc-content table {
+      width: 100%; border-collapse: collapse;
+      border: 1px solid rgb(226 232 240); border-radius: 0.75rem;
+      overflow: hidden; font-size: 1rem;
+    }
+    .doc-content th, .doc-content td {
+      border: 1px solid rgb(226 232 240); padding: 0.7rem 0.8rem;
+      text-align: left; vertical-align: top;
+    }
+    .doc-content th {
+      background: rgb(248 250 252); color: rgb(30 41 59); font-weight: 600;
+    }
+    .doc-content pre, .doc-content code {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    }
+    .doc-content pre {
+      background: rgb(15 23 42); color: rgb(226 232 240);
+      padding: 1rem; border-radius: 0.75rem; overflow-x: auto;
+      font-size: 1rem; line-height: 1.65;
+    }
+    .doc-content p code, .doc-content li code,
+    .doc-content td code, .doc-content th code {
+      background: rgb(241 245 249); color: rgb(15 23 42);
+      border: 1px solid rgb(226 232 240); border-radius: 0.4rem;
+      padding: 0.08rem 0.4rem; font-size: 1em;
+    }
+    .doc-content blockquote {
+      border-left: 3px solid rgb(14 165 233); padding-left: 0.85rem;
+      color: rgb(71 85 105); background: rgb(240 249 255);
+      border-radius: 0.5rem; padding-top: 0.55rem; padding-bottom: 0.55rem;
+    }
+    .text-xs { font-size: 1rem !important; }
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: ''; position: absolute; left: 0.6rem; top: 0.25rem; bottom: 0.25rem;
+      width: 2px; background: rgb(186 230 253);
+    }
+    .timeline-item { position: relative; margin-bottom: 1.75rem; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -1.65rem; top: 0.35rem;
+      width: 0.75rem; height: 0.75rem; border-radius: 50%;
+      background: rgb(2 132 199); border: 3px solid rgb(224 242 254);
+    }
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+    #sidebar-backdrop { display: none; }
+    #sidebar-backdrop.open { display: block; }
+    @media (max-width: 1023px) {
+      #sidebar { transform: translateX(-100%); transition: transform 0.2s ease; position: fixed; top: 0; left: 0; z-index: 40; height: 100vh; width: 80vw; max-width: 320px; }
+      #sidebar.open { transform: translateX(0); }
+    }
+  </style>
+  <title>멘탈케어 앱 AI 코치 고도화 및 UI 개선 — 프로젝트 제안서</title>
+</head>
+<body class="text-slate-800 font-sans antialiased">
+  <div class="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-10">
+
+    <!-- Header -->
+    <header class="mb-6 rounded-2xl border border-slate-200/70 bg-white/85 px-5 py-3 shadow-soft backdrop-blur">
+      <div class="flex flex-wrap items-center gap-3">
+        <button id="sidebar-toggle" class="lg:hidden inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-medium text-slate-700 hover:border-sky-300 hover:text-sky-700">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          메뉴
+        </button>
+        <a href="#home" class="inline-flex items-center shrink-0 text-sm font-bold tracking-tight text-slate-800">
+          프로젝트 제안서
+        </a>
+        <div class="hidden sm:block ml-auto text-right">
+          <p class="text-sm font-semibold tracking-[0.04em] text-sky-700/90">멘탈케어 앱 AI 코치 고도화 및 UI 개선</p>
+          <p class="text-xs text-slate-400">프로젝트 제안서</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+
+      <!-- Sidebar -->
+      <div id="sidebar-backdrop" class="fixed inset-0 bg-black/30 z-30 lg:hidden" onclick="closeSidebar()"></div>
+      <aside id="sidebar" class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 shadow-soft backdrop-blur lg:sticky lg:top-6 lg:h-[calc(100vh-4rem)] lg:overflow-auto">
+        <nav id="nav" class="space-y-1">
+          <a href="#home" data-page="home" class="nav-link block rounded-xl border px-3 py-2 text-sm border-sky-200 bg-sky-50 font-medium text-sky-700">홈</a>
+          <div class="my-3 border-t border-slate-200"></div>
+          <p class="mb-2 mt-1 px-1 text-sm font-semibold tracking-[0.14em] text-slate-400">제안서</p>
+          <a href="#overview" data-page="overview" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">프로젝트 소개</a>
+          <a href="#estimate" data-page="estimate" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">견적서</a>
+          <a href="#manday" data-page="manday" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">공수계산서</a>
+          <a href="#prd" data-page="prd" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">PRD</a>
+          <div class="my-3 border-t border-slate-200"></div>
+          <p class="mb-2 mt-1 px-1 text-sm font-semibold tracking-[0.14em] text-slate-400">일정 & 경험</p>
+          <a href="#timeline" data-page="timeline" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">일정 제안</a>
+          <a href="#portfolio" data-page="portfolio" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">유사 프로젝트 경험</a>
+        </nav>
+      </aside>
+
+      <!-- Main -->
+      <main class="min-w-0">
+
+        <!-- PAGE: Home -->
+        <div id="page-home" class="page-section active space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-6 shadow-soft backdrop-blur md:p-8">
+            <p class="mb-2 text-xs font-semibold tracking-[0.2em] text-sky-700/80">프로젝트 제안서</p>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">멘탈케어 앱 AI 코치 고도화 및 UI 개선 개발</h1>
+            <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-600 md:text-base">운영 중인 멘탈케어 앱의 AI 코치 품질을 대화 요약 저장·파이프라인 주입 방식으로 고도화하고, 제공된 와이어프레임 기반으로 홈·미션·일기 화면을 개편합니다. Flutter(Dart) 앱 프론트엔드, Python AI 백엔드, 관리자 웹을 아우르는 통합 개발 경험을 바탕으로, 고정 예산 내 우선순위 기반 최적 개발 스코프를 제안드립니다.</p>
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-sky-700">7,200,000원 (VAT 별도)</span>
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-sky-700">30일</span>
+              <span class="inline-flex rounded-full border border-amber-200 bg-amber-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-amber-700">앱 · Gen AI · 챗봇</span>
+              <a href="https://www.wishket.com/project/155838/" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-sm font-medium text-slate-500 transition hover:border-sky-300 hover:text-sky-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                원본 공고
+              </a>
+            </div>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <a href="#overview" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">소개</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">프로젝트 소개</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">프로젝트 분석, 핵심 요구사항 정리, 제안 포인트</p>
+            </a>
+            <a href="#estimate" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">비용</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">견적서</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">항목별 비용 산출 근거 및 상세 견적</p>
+            </a>
+            <a href="#manday" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">공수</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">공수계산서</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">기능별 개발 공수(man-day) 산출 내역</p>
+            </a>
+            <a href="#prd" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">기획</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">PRD</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">기능 요구사항 정의서, 사용자 스토리, 기술 제약</p>
+            </a>
+            <a href="#timeline" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">일정</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">일정 제안</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">단계별 마일스톤 및 산출물 일정표</p>
+            </a>
+            <a href="#portfolio" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">경험</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">유사 프로젝트 경험</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">유사 프로젝트 수행 경험 및 기술 스택</p>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">7,200,000원</p>
+              <p class="mt-1 text-xs text-slate-500">제안 금액 (VAT 별도)</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">30일</p>
+              <p class="mt-1 text-xs text-slate-500">제안 기간</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">22 M/D</p>
+              <p class="mt-1 text-xs text-slate-500">총 개발 공수</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">3+</p>
+              <p class="mt-1 text-xs text-slate-500">유사 프로젝트 경험</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 to-brand-50 p-6 text-center shadow-soft md:p-10">
+            <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">함께 만들어 가겠습니다</h2>
+            <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600">각 메뉴를 클릭하시면 상세 내용을 확인하실 수 있습니다.</p>
+          </div>
+        </div>
+
+        <!-- PAGE: Overview -->
+        <div id="page-overview" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>프로젝트 소개</h1>
+              <blockquote>운영 중인 멘탈케어 앱의 AI 코치 대화 품질을 고도화하고, 제공된 와이어프레임을 기반으로 핵심 화면(홈·미션·일기)의 사용성을 개선하는 순수 개발 프로젝트입니다.</blockquote>
+
+              <h2>프로젝트 개요</h2>
+              <table>
+                <tr><th>항목</th><th>내용</th></tr>
+                <tr><td>프로젝트명</td><td><a href="https://www.wishket.com/project/155838/" target="_blank" rel="noopener noreferrer" class="text-sky-700 underline decoration-sky-300 hover:decoration-sky-500">기존 멘탈케어 앱 AI 코치 고도화 및 UI 개선 개발</a></td></tr>
+                <tr><td>카테고리</td><td>모바일 앱(Android/iOS) · Gen AI · ChatGPT·챗봇</td></tr>
+                <tr><td>제안 금액</td><td>7,200,000원 (VAT 별도)</td></tr>
+                <tr><td>제안 기간</td><td>30일</td></tr>
+                <tr><td>핵심 기술</td><td>Flutter(Dart), Python, OpenAI API, 관리자 웹</td></tr>
+              </table>
+
+              <h2>핵심 요구사항 분석</h2>
+              <ul>
+                <li><strong>AI 코치 백엔드 고도화</strong> — 대화 요약 저장 및 파이프라인 주입 방식으로 AI 대화 품질·맥락 유지력 향상 (Python · OpenAI)</li>
+                <li><strong>앱 UI 개편</strong> — 제공된 와이어프레임 기반 홈 화면·미션·일기 등 주요 기능 화면의 사용성 개선 (Flutter/Dart)</li>
+                <li><strong>관리자 웹 기능 추가</strong> — 운영 효율을 위한 관리자 페이지 기능 확장</li>
+                <li><strong>레거시 환경 연계</strong> — 기존 TypeScript/Shell/Ruby/JavaScript 레거시 환경과의 호환을 유지하며 개발</li>
+                <li><strong>고정 예산 내 우선순위 기반 스코프</strong> — 800만 원 예산 내에서 첨부 우선순위(1~4순위) 기준 개발 가능 범위를 명확히 제안</li>
+              </ul>
+
+              <h2>제안 포인트</h2>
+              <p><strong>1. AI 대화 파이프라인 고도화 경험.</strong> OpenAI API 기반의 AI 분석·요약 기능을 헬스케어 앱에 실제로 구현·운영한 경험이 있습니다. 대화 요약 저장(summary memory)과 컨텍스트 주입(context injection) 방식은 AI 코치의 맥락 유지와 응답 일관성을 높이는 핵심 패턴으로, 토큰 비용과 응답 품질의 균형을 고려해 설계합니다.</p>
+              <p><strong>2. Flutter 앱 + Python 백엔드 통합 개발.</strong> Dart 기반 Flutter 앱 프론트엔드와 Python/Node 기반 AI 백엔드를 단일 인력이 일관되게 개발하여, 프론트-백엔드 간 인터페이스 정합성과 커뮤니케이션 오버헤드를 최소화합니다.</p>
+              <p><strong>3. 레거시 코드 분석·리팩토링.</strong> 운영 중 서비스의 기존 코드를 우선 분석하여 영향 범위를 파악하고, 와이어프레임 기반 UI 개편을 기존 구조와 충돌 없이 안전하게 반영합니다.</p>
+              <p><strong>4. 고정 예산 최적화.</strong> 800만 원 고정 예산과 우선순위(완성도 우선) 조건에 맞춰, 1~2순위 핵심 기능을 완성도 있게 우선 구현하고 3~4순위는 잔여 예산·일정 범위에서 단계적으로 협의하는 현실적 스코프를 제안합니다.</p>
+
+              <h2>사용 기술 및 툴</h2>
+              <h3>개발 기술</h3>
+              <div class="flex flex-wrap gap-2 not-prose mb-4">
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Flutter</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Dart</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Python</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">OpenAI API</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">FastAPI</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Node.js</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">TypeScript</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Next.js</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">PostgreSQL / MySQL</span>
+              </div>
+              <h3>협업 및 커뮤니케이션</h3>
+              <div class="flex flex-wrap gap-2 not-prose">
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">GitHub</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Slack / 카카오톡</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Zoom / Google Meet</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Notion</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: Estimate -->
+        <div id="page-estimate" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>견적서</h1>
+              <blockquote>본 견적서는 프로젝트 요구사항 분석을 기반으로 산출되었으며, 800만 원 고정 예산 내 제안 금액입니다.</blockquote>
+
+              <h2>견적 요약</h2>
+              <table>
+                <tr><th>항목</th><th>내용</th></tr>
+                <tr><td>프로젝트명</td><td>기존 멘탈케어 앱 AI 코치 고도화 및 UI 개선 개발</td></tr>
+                <tr><td>제안 금액</td><td><strong>7,200,000원 (VAT 별도)</strong></td></tr>
+                <tr><td>제안 기간</td><td>30일</td></tr>
+                <tr><td>견적 유효기간</td><td>제안일로부터 30일</td></tr>
+              </table>
+
+              <h2>상세 견적 내역</h2>
+              <table>
+                <thead>
+                  <tr><th>구분</th><th>항목</th><th>수량</th><th>공수</th><th>금액</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>분석/설계</td><td>레거시 코드 분석, AI 파이프라인 설계, 스코프 확정</td><td>1식</td><td>3 M/D</td><td>1,000,000원</td></tr>
+                  <tr><td>프론트엔드</td><td>Flutter UI 개편 (홈·미션·일기 + 공통 컴포넌트)</td><td>1식</td><td>8 M/D</td><td>2,600,000원</td></tr>
+                  <tr><td>백엔드(AI)</td><td>대화 요약 저장 · 파이프라인 주입 · OpenAI 연동 고도화</td><td>1식</td><td>6 M/D</td><td>2,000,000원</td></tr>
+                  <tr><td>관리자 웹</td><td>관리자 페이지 기능 추가</td><td>1식</td><td>3 M/D</td><td>1,000,000원</td></tr>
+                  <tr><td>QA/배포</td><td>통합 테스트, 디바이스 QA, 배포 지원</td><td>1식</td><td>2 M/D</td><td>600,000원</td></tr>
+                </tbody>
+                <tfoot>
+                  <tr><th colspan="4">합계 (VAT 별도)</th><th>7,200,000원</th></tr>
+                </tfoot>
+              </table>
+
+              <h2>산정 근거</h2>
+              <p>공고에 명시된 고정 예산(800만 원)과 우선순위(완성도 우선) 조건을 반영하여, 핵심 과업 범위를 완성도 있게 수행할 수 있는 현실적 금액으로 산정하였습니다. 기획·디자인·와이어프레임이 클라이언트 측에서 제공되는 점을 반영하여 디자인 공수는 제외하였으며, 개발(프론트엔드·AI 백엔드·관리자 웹) 및 QA에 집중 배분하였습니다.</p>
+
+              <h2>포함 사항</h2>
+              <ul>
+                <li>수정 및 추가된 프론트엔드·백엔드 소스 코드 원본 일체</li>
+                <li>개발 문서 (AI 파이프라인 설계서, API 명세서, DB/스키마 변경 내역, 배포 가이드)</li>
+                <li>1개월 무상 하자 보수</li>
+                <li>배포 환경 세팅 지원 (1회)</li>
+              </ul>
+
+              <h2>불포함 사항</h2>
+              <ul>
+                <li>서버 호스팅 비용 (AWS, GCP 등)</li>
+                <li>OpenAI 등 외부 유료 API 사용 비용</li>
+                <li>기획·디자인·와이어프레임 (클라이언트 제공)</li>
+                <li>하자 보수 기간 이후 유지보수 (월 단위 별도 협의)</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: Manday -->
+        <div id="page-manday" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>공수계산서</h1>
+              <blockquote>기능별 개발 공수(Man-Day)를 산출하여 일정과 비용의 근거를 제시합니다.</blockquote>
+
+              <h2>공수 요약</h2>
+              <table>
+                <tr><th>구분</th><th>공수 (M/D)</th><th>비율</th></tr>
+                <tr><td>분석/설계</td><td>3 M/D</td><td>14%</td></tr>
+                <tr><td>프론트엔드 (Flutter)</td><td>8 M/D</td><td>36%</td></tr>
+                <tr><td>백엔드 (Python AI)</td><td>6 M/D</td><td>27%</td></tr>
+                <tr><td>관리자 웹</td><td>3 M/D</td><td>14%</td></tr>
+                <tr><td>QA/배포</td><td>2 M/D</td><td>9%</td></tr>
+                <tr><th>합계</th><th>22 M/D</th><th>100%</th></tr>
+              </table>
+
+              <h2>기능별 상세 공수</h2>
+              <table>
+                <thead>
+                  <tr><th>기능</th><th>세부 작업</th><th>담당</th><th>공수 (M/D)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td rowspan="2">분석/설계</td><td>레거시 코드 분석 및 영향 범위 파악</td><td>공통</td><td>1.5</td></tr>
+                  <tr><td>AI 파이프라인 설계 + 엑셀 우선순위 스코프 매핑</td><td>공통</td><td>1.5</td></tr>
+                  <tr><td rowspan="3">AI 코치 백엔드</td><td>대화 요약 저장 로직 (summary memory) 구현</td><td>백엔드</td><td>2.5</td></tr>
+                  <tr><td>요약 컨텍스트 파이프라인 주입 (context injection)</td><td>백엔드</td><td>2</td></tr>
+                  <tr><td>OpenAI 프롬프트·응답 처리 고도화 및 튜닝</td><td>백엔드</td><td>1.5</td></tr>
+                  <tr><td rowspan="3">앱 UI 개편</td><td>홈 화면 개편 (와이어프레임 기반)</td><td>프론트엔드</td><td>3</td></tr>
+                  <tr><td>미션 화면 개편</td><td>프론트엔드</td><td>2.5</td></tr>
+                  <tr><td>일기 화면 개편 + 공통 컴포넌트 정리</td><td>프론트엔드</td><td>2.5</td></tr>
+                  <tr><td>관리자 웹</td><td>관리자 페이지 기능 추가 (운영/모니터링)</td><td>프론트엔드</td><td>3</td></tr>
+                  <tr><td>QA/배포</td><td>통합 테스트, Android/iOS 디바이스 QA, 배포 지원</td><td>공통</td><td>2</td></tr>
+                </tbody>
+              </table>
+
+              <h2>산정 기준</h2>
+              <ul>
+                <li>1 M/D = 8시간 기준 (1인 1일 작업량)</li>
+                <li>주 5일 근무 기준</li>
+                <li>버퍼 10~15% 포함</li>
+                <li>기획·디자인·와이어프레임은 클라이언트 제공 → 디자인 공수 제외</li>
+                <li>유사 프로젝트 수행 경험 기반 효율적 개발</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: PRD -->
+        <div id="page-prd" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>PRD (Product Requirements Document)</h1>
+              <blockquote>프로젝트 요구사항을 정의하고 기능 범위를 명확히 합니다. 상세 기능 명세는 클라이언트 제공 엑셀(우선순위 1~4순위) 기준으로 킥오프 시 최종 확정합니다.</blockquote>
+
+              <h2>1. 프로젝트 배경 및 목적</h2>
+              <p>현재 운영 중인 멘탈케어 모바일 앱의 AI 코치 대화 품질이 맥락 유지·일관성 측면에서 개선이 필요한 상황입니다. 본 프로젝트는 ① 대화 요약 저장 및 파이프라인 주입 방식의 백엔드 고도화로 AI 대화 품질을 향상시키고, ② 와이어프레임 기반 홈·미션·일기 화면 개편으로 사용성을 개선하며, ③ 관리자 웹 기능을 확장하여 운영 효율을 높이는 것을 목표로 합니다.</p>
+
+              <h2>2. 사용자 정의</h2>
+              <table>
+                <thead>
+                  <tr><th>사용자 유형</th><th>설명</th><th>주요 기능</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>앱 사용자</td><td>멘탈케어 서비스 이용자</td><td>AI 코치 대화, 미션 수행, 일기 작성, 홈 대시보드</td></tr>
+                  <tr><td>운영 관리자</td><td>서비스 운영·모니터링 담당</td><td>관리자 웹 기능, 사용자/콘텐츠 관리, 대화 모니터링</td></tr>
+                </tbody>
+              </table>
+
+              <h2>3. 기능 요구사항</h2>
+              <h3>3.1 AI 코치 백엔드 고도화 (Python · OpenAI)</h3>
+              <ul>
+                <li><strong>[필수]</strong> 대화 요약 저장 — 대화 세션을 요약하여 저장하고, 장기 맥락(summary memory)으로 관리</li>
+                <li><strong>[필수]</strong> 파이프라인 주입 — 저장된 요약을 프롬프트 컨텍스트에 주입하여 AI 코치의 맥락 유지력 향상</li>
+                <li><strong>[필수]</strong> OpenAI 프롬프트·응답 처리 로직 고도화 (응답 품질·토큰 효율 균형)</li>
+                <li><strong>[선택]</strong> 요약 품질·안전성(민감 정보) 가드레일 보강</li>
+              </ul>
+              <h3>3.2 앱 UI 개편 (Flutter · Dart)</h3>
+              <ul>
+                <li><strong>[필수]</strong> 홈 화면 개편 (제공 와이어프레임 기반)</li>
+                <li><strong>[필수]</strong> 미션 화면 개편</li>
+                <li><strong>[필수]</strong> 일기 화면 개편 및 공통 컴포넌트 정리</li>
+                <li><strong>[선택]</strong> 화면 전환·인터랙션 디테일 개선</li>
+              </ul>
+              <h3>3.3 관리자 웹</h3>
+              <ul>
+                <li><strong>[필수]</strong> 운영에 필요한 관리자 페이지 기능 추가</li>
+                <li><strong>[선택]</strong> AI 대화 로그·요약 모니터링 뷰</li>
+              </ul>
+
+              <h2>4. 비기능 요구사항</h2>
+              <table>
+                <thead>
+                  <tr><th>항목</th><th>요구사항</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>호환성</td><td>Android/iOS 양대 플랫폼, 기존 레거시 환경(TS/Shell/Ruby/JS)과 호환 유지</td></tr>
+                  <tr><td>안정성</td><td>운영 중 서비스 영향 최소화, 점진적 배포 및 롤백 가능 구조</td></tr>
+                  <tr><td>보안</td><td>대화·일기 등 민감 정보 보호, API 키 안전 관리</td></tr>
+                  <tr><td>성능</td><td>AI 응답 지연 최소화, 요약 주입 시 토큰 사용 최적화</td></tr>
+                </tbody>
+              </table>
+
+              <h2>5. 기술 제약사항</h2>
+              <p>메인 언어는 Dart(Flutter)·Python으로 고정되며, 서브 언어로 TypeScript·Shell·Ruby·JavaScript 등 기존 레거시 환경이 혼재합니다. 기획·디자인·와이어프레임은 클라이언트 측에서 제공하며, 파트너는 개발에만 집중합니다. 최대 예산은 800만 원으로 고정되어 있으며, 상세 과업 범위는 첨부 엑셀의 우선순위(1~4순위)를 기준으로 산정합니다.</p>
+
+              <h2>6. 범위 외 사항 (Out of Scope)</h2>
+              <ul>
+                <li>신규 기획 및 와이어프레임 제작 (클라이언트 제공)</li>
+                <li>UI 디자인 에셋 제작 (클라이언트 제공)</li>
+                <li>엑셀 우선순위 중 예산·일정을 초과하는 후순위(3~4순위) 항목 — 잔여 범위 내 단계적 협의</li>
+                <li>외부 유료 API 사용료 및 서버 인프라 비용</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: Timeline -->
+        <div id="page-timeline" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>일정 제안</h1>
+              <blockquote>총 30일 기준 단계별 마일스톤 및 산출물을 제안합니다. (예상 시작일: 2026년 7월 6일)</blockquote>
+
+              <h2>전체 일정 요약</h2>
+              <table>
+                <thead>
+                  <tr><th>단계</th><th>기간</th><th>주요 산출물</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Phase 1: 분석/설계</td><td>Day 1–5</td><td>레거시 분석 리포트, AI 파이프라인 설계서, 확정 스코프(우선순위 매핑)</td></tr>
+                  <tr><td>Phase 2: AI 백엔드 고도화</td><td>Day 6–16</td><td>대화 요약 저장·파이프라인 주입 모듈, OpenAI 연동 고도화, 관리자 API</td></tr>
+                  <tr><td>Phase 3: 앱 UI 개편</td><td>Day 11–25</td><td>홈·미션·일기 화면 개편, 공통 컴포넌트</td></tr>
+                  <tr><td>Phase 4: 관리자 웹 + 통합</td><td>Day 22–27</td><td>관리자 페이지 기능, FE-BE 통합</td></tr>
+                  <tr><td>Phase 5: QA/배포</td><td>Day 28–30</td><td>통합 테스트, 디바이스 QA, 배포 및 소스 이관</td></tr>
+                </tbody>
+              </table>
+            </article>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <h2 class="mb-4 text-sm font-semibold tracking-[0.14em] text-slate-500">상세 타임라인</h2>
+            <div class="timeline">
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 1</p>
+                <h4 class="text-base font-semibold text-slate-900">분석 및 설계</h4>
+                <p class="mb-1 text-xs font-semibold text-amber-600">Day 1–5</p>
+                <p class="text-sm leading-7 text-slate-600">기존 앱·백엔드 코드 분석, 영향 범위 파악, AI 대화 요약·주입 파이프라인 설계, 첨부 엑셀 우선순위 기반 개발 스코프 확정</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 레거시 분석 리포트, AI 파이프라인 설계서, 확정 스코프 문서</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 2</p>
+                <h4 class="text-base font-semibold text-slate-900">AI 코치 백엔드 고도화</h4>
+                <p class="mb-1 text-xs font-semibold text-amber-600">Day 6–16</p>
+                <p class="text-sm leading-7 text-slate-600">대화 요약 저장(summary memory) 로직, 요약 컨텍스트 파이프라인 주입, OpenAI 프롬프트·응답 처리 고도화, 관리자용 API 구현</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: AI 백엔드 모듈, API 명세서, 요약/주입 동작 데모</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 3</p>
+                <h4 class="text-base font-semibold text-slate-900">앱 UI 개편</h4>
+                <p class="mb-1 text-xs font-semibold text-amber-600">Day 11–25</p>
+                <p class="text-sm leading-7 text-slate-600">와이어프레임 기반 홈·미션·일기 화면 개편, 공통 컴포넌트 정리, AI 코치 대화 UI 연동</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 개편된 Flutter 화면, 공통 컴포넌트, 화면별 동작 빌드</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 4</p>
+                <h4 class="text-base font-semibold text-slate-900">관리자 웹 + 통합</h4>
+                <p class="mb-1 text-xs font-semibold text-amber-600">Day 22–27</p>
+                <p class="text-sm leading-7 text-slate-600">관리자 페이지 기능 추가, 프론트엔드-백엔드 통합, 엔드투엔드 연동 점검</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 관리자 웹 기능, 통합 테스트 결과</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 5</p>
+                <h4 class="text-base font-semibold text-slate-900">QA 및 배포</h4>
+                <p class="mb-1 text-xs font-semibold text-amber-600">Day 28–30</p>
+                <p class="text-sm leading-7 text-slate-600">통합 테스트, Android/iOS 디바이스 QA, 버그 픽스, 배포 지원 및 소스 코드 원본 이관</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: QA 리포트, 최종 소스 코드, 배포 가이드</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h2>마일스톤 체크포인트</h2>
+              <table>
+                <thead>
+                  <tr><th>마일스톤</th><th>시점</th><th>검수 기준</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>M1: 설계·스코프 확정</td><td>Day 5</td><td>AI 파이프라인 설계서 및 확정 스코프 승인</td></tr>
+                  <tr><td>M2: AI 백엔드 고도화 완료</td><td>Day 16</td><td>요약 저장·주입 동작 확인, 대화 품질 개선 검증</td></tr>
+                  <tr><td>M3: UI 개편 완료</td><td>Day 25</td><td>홈·미션·일기 화면 와이어프레임 일치 확인</td></tr>
+                  <tr><td>M4: 최종 납품</td><td>Day 30</td><td>통합 QA 통과, 소스 코드·문서 이관 완료</td></tr>
+                </tbody>
+              </table>
+
+              <h2>커뮤니케이션 계획</h2>
+              <table>
+                <tr><th>항목</th><th>방식</th><th>주기</th></tr>
+                <tr><td>일일 진행 공유</td><td>Slack / 카카오톡</td><td>매일</td></tr>
+                <tr><td>주간 미팅</td><td>Zoom / Google Meet</td><td>주 1회</td></tr>
+                <tr><td>마일스톤 리뷰</td><td>화면 공유 + 문서</td><td>단계 완료 시</td></tr>
+                <tr><td>이슈 트래킹</td><td>GitHub Issues</td><td>상시</td></tr>
+              </table>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: Portfolio -->
+        <div id="page-portfolio" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>유사 프로젝트 경험</h1>
+              <blockquote>본 프로젝트와 유사한 기능/기술 스택(Flutter 앱 · OpenAI AI · 헬스케어/라이프스타일)을 활용한 수행 경험을 소개합니다.</blockquote>
+            </article>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">OpenAI</p>
+              <p class="mt-1 text-xs text-slate-500">AI 분석 운영 경험</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">Flutter</p>
+              <p class="mt-1 text-xs text-slate-500">크로스플랫폼 앱 다수</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">3+</p>
+              <p class="mt-1 text-xs text-slate-500">헬스케어/라이프스타일 앱</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">100%</p>
+              <p class="mt-1 text-xs text-slate-500">기획~배포 풀사이클</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Harmony Link -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">헬스케어 · AI · Flutter</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">시니어 케어 관리 플랫폼 (AI 건강 분석)</h3>
+              <p class="mt-1 text-xs text-slate-400">B2B SaaS · 헬스케어 · 약 6개월</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>케어 로그·투약 관리, 보호자 커뮤니케이션, OpenAI 기반 AI 건강 분석을 갖춘 멀티플랫폼(6종) 헬스케어 플랫폼. Flutter 앱과 NestJS 백엔드를 단일 인력이 풀스택으로 구축·운영.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>OpenAI API 기반 AI 건강 분석·요약 생성</li>
+                  <li>Flutter 크로스플랫폼 앱 (iOS/Android/웹)</li>
+                  <li>전자서명, 멀티테넌트 아키텍처, 140+ API 엔드포인트</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <p>OpenAI를 실제 헬스케어 서비스에 통합하여 <strong>대화·데이터 요약과 컨텍스트 기반 분석</strong>을 운영한 경험이 본 프로젝트의 "대화 요약 저장·파이프라인 주입" 고도화와 직결됩니다. Flutter 앱 + AI 백엔드 통합 구조도 동일합니다.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Flutter</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">NestJS</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">OpenAI</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Next.js</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">AWS</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fortune App -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">B2C 앱 · 라이프스타일 · Flutter</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">사주 기반 운세 앱 (미션·리워드·일일 체크인)</h3>
+              <p class="mt-1 text-xs text-slate-400">B2C 앱 · 엔터테인먼트/라이프스타일 · 3개월</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>Flutter Clean Architecture 기반 라이프스타일 앱. 포인트·데일리 체크인 리워드, 결과 화면 공유, 소셜 로그인을 갖춘 305개 Dart 파일 규모의 크로스플랫폼 앱을 기획~배포까지 단독 수행.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>홈 대시보드, 포인트·미션·데일리 체크인 리워드</li>
+                  <li>BLoC/Cubit 상태관리, Retrofit+Dio, AutoRoute 기반 화면 구성</li>
+                  <li>다국어(한/영), Google/Apple SSO, 결과 스크린샷 공유</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <p>본 프로젝트의 <strong>홈·미션·일기 화면 개편</strong>과 동일한 화면 유형(홈 대시보드·미션·기록)을 Flutter로 구현·운영한 경험이 있어, 와이어프레임 기반 UI 개편을 빠르고 완성도 있게 진행할 수 있습니다.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Flutter</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Dart</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">BLoC</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Firebase</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Node.js</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- DayStarter -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">헬스케어 · 게이미피케이션 · Flutter</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">행동변화 헬스케어 앱 (미션·습관 게이미피케이션)</h3>
+              <p class="mt-1 text-xs text-slate-400">B2C 앱 · 헬스케어/게이미피케이션 · 지속 운영(3년+)</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>센서 기반 행동 검증과 미션·리워드 이코노미로 사용자의 행동 변화를 유도하는 헬스케어 앱. Flutter 앱 + NestJS 백엔드, 약 50K LOC 규모를 장기간 운영·고도화.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>미션·루트박스 리워드 이코노미, 행동 변화 게이미피케이션</li>
+                  <li>센서/ML 기반 검증, 캐릭터 시스템</li>
+                  <li>운영 중 서비스의 지속적 기능 고도화</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <p>멘탈케어 앱의 <strong>미션·행동변화 도메인</strong>과 운영 중 서비스를 고도화하는 작업 성격이 동일합니다. 운영 앱에 영향을 최소화하며 점진적으로 기능을 개선한 경험이 있습니다.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Flutter</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">NestJS</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">PostgreSQL</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Firebase</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">ML Kit</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 to-brand-50 p-6 text-center shadow-soft md:p-10">
+            <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">함께 만들어 가겠습니다</h2>
+            <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600">프로젝트에 대해 더 자세한 논의를 원하시면 미팅을 신청해 주세요.</p>
+          </div>
+        </div>
+
+        <!-- Bottom Page Navigation -->
+        <div id="page-nav" class="mt-6 flex items-center justify-between gap-4" style="display:none;">
+          <a id="nav-prev" href="#home"
+             class="group flex items-center gap-2 rounded-2xl border border-slate-200/70 bg-white/90 px-5 py-3 shadow-soft backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+            <svg class="w-5 h-5 text-slate-400 transition group-hover:text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            <span>
+              <span class="block text-xs text-slate-400">이전</span>
+              <span id="nav-prev-label" class="block text-sm font-semibold text-slate-700 group-hover:text-sky-700">홈</span>
+            </span>
+          </a>
+          <a id="nav-next" href="#overview"
+             class="group flex items-center gap-2 rounded-2xl border border-slate-200/70 bg-white/90 px-5 py-3 shadow-soft backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white text-right ml-auto">
+            <span>
+              <span class="block text-xs text-slate-400">다음</span>
+              <span id="nav-next-label" class="block text-sm font-semibold text-slate-700 group-hover:text-sky-700">프로젝트 소개</span>
+            </span>
+            <svg class="w-5 h-5 text-slate-400 transition group-hover:text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+      </main>
+    </div>
+
+    <footer class="mt-10 border-t border-slate-200 pt-6 text-xs text-slate-500">
+      &copy; 2026 &middot; 본 제안서는 멘탈케어 앱 AI 코치 고도화 및 UI 개선 개발 프로젝트를 위해 작성되었습니다.
+    </footer>
+  </div>
+
+  <script>
+    const pages = ['home', 'overview', 'estimate', 'manday', 'prd', 'timeline', 'portfolio'];
+    const pageLabels = {
+      home: '홈', overview: '프로젝트 소개', estimate: '견적서',
+      manday: '공수계산서', prd: 'PRD', timeline: '일정 제안', portfolio: '유사 프로젝트 경험'
+    };
+
+    function navigate(pageId) {
+      if (!pages.includes(pageId)) pageId = 'home';
+      document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById('page-' + pageId);
+      if (target) target.classList.add('active');
+      document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.dataset.page === pageId) {
+          link.className = 'nav-link block rounded-xl border px-3 py-2 text-sm border-sky-200 bg-sky-50 font-medium text-sky-700';
+        } else {
+          link.className = 'nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900';
+        }
+      });
+      updatePageNav(pageId);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      closeSidebar();
+    }
+
+    function updatePageNav(pageId) {
+      const nav = document.getElementById('page-nav');
+      const idx = pages.indexOf(pageId);
+      const prevBtn = document.getElementById('nav-prev');
+      const nextBtn = document.getElementById('nav-next');
+      const prevLabel = document.getElementById('nav-prev-label');
+      const nextLabel = document.getElementById('nav-next-label');
+      nav.style.display = (pageId === 'home') ? 'none' : 'flex';
+      if (idx > 0) {
+        prevBtn.href = '#' + pages[idx - 1];
+        prevLabel.textContent = pageLabels[pages[idx - 1]];
+        prevBtn.style.visibility = 'visible';
+      } else {
+        prevBtn.style.visibility = 'hidden';
+      }
+      if (idx < pages.length - 1) {
+        nextBtn.href = '#' + pages[idx + 1];
+        nextLabel.textContent = pageLabels[pages[idx + 1]];
+        nextBtn.style.visibility = 'visible';
+      } else {
+        nextBtn.style.visibility = 'hidden';
+      }
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebar-backdrop').classList.remove('open');
+    }
+
+    function handleHash() {
+      const hash = (location.hash || '#home').replace('#', '');
+      navigate(hash);
+    }
+    window.addEventListener('hashchange', handleHash);
+    window.addEventListener('DOMContentLoaded', handleHash);
+
+    document.getElementById('sidebar-toggle').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebar-backdrop').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>
