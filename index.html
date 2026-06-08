@@ -248,19 +248,35 @@
               </table>
 
               <h2>핵심 요구사항 분석</h2>
+              <p>첨부된 우선순위 기능표(1~4순위, 총 35개 기능)를 분석하여 각 영역(AI 코치·오늘의 미션·감정일기·마음편지·오늘의 격언·회원가입·어드민·UI/UX·브랜딩)의 과업을 도출하였습니다.</p>
               <ul>
-                <li><strong>AI 코치 백엔드 고도화</strong> — 대화 요약 저장 및 파이프라인 주입 방식으로 AI 대화 품질·맥락 유지력 향상 (Python · OpenAI)</li>
-                <li><strong>앱 UI 개편</strong> — 제공된 와이어프레임 기반 홈 화면·미션·일기 등 주요 기능 화면의 사용성 개선 (Flutter/Dart)</li>
-                <li><strong>관리자 웹 기능 추가</strong> — 운영 효율을 위한 관리자 페이지 기능 확장</li>
-                <li><strong>레거시 환경 연계</strong> — 기존 TypeScript/Shell/Ruby/JavaScript 레거시 환경과의 호환을 유지하며 개발</li>
-                <li><strong>고정 예산 내 우선순위 기반 스코프</strong> — 800만 원 예산 내에서 첨부 우선순위(1~4순위) 기준 개발 가능 범위를 명확히 제안</li>
+                <li><strong>[1순위] AI 코치 백엔드 고도화</strong> — 메모리 v1(대화 요약 저장·주입) + 코치별 few-shot·기법 스니펫 답변 파이프라인 + 경량 2단계(입력분석→생성) 구조 구현 (Python · OpenAI)</li>
+                <li><strong>[1순위] 핵심 화면·기능</strong> — 오늘의 미션 UI 개편, 감정일기 작성 플로우, 마음편지 신고+어드민 처리, 금칙어 필터+사전 관리, 어드민 코치 관리, 터치 범위 보정 (Flutter/Dart)</li>
+                <li><strong>[2순위] 기능 확장</strong> — 입력 elicitation(칩/질문) UI, 어드민(AI코치·미션·격언) 관리, 감정일기 캘린더 이모티콘, 오늘의 격언 개선, 회원가입 척도·설문 DB 점검·기본코치 변경</li>
+                <li><strong>[3순위] UI/브랜딩 리뉴얼</strong> — 홈 화면 구조 변경, 디자인 톤 리스킨, 온보딩 시나리오, 출석/로딩 연출(lottie), 커뮤니티 nav 제거, 앱명·로고 교체 및 스토어 반영 (figma·에셋 기반)</li>
+                <li><strong>[4순위] 후속 고도화</strong> — 마음편지 양방향 대화, 이벤트 로그 DB·분석, 사용자/콘텐츠 관리, 격언 배경 AI 자동화, 지난 기록 열람 등 (규모 고려 시 월 유지보수 단계 협의)</li>
+                <li><strong>레거시 환경 연계</strong> — 기존 TypeScript/Shell/Ruby/JavaScript 레거시 환경과 호환을 유지하며 운영 중 서비스에 안전하게 반영</li>
               </ul>
+
+              <h2>예산 내 개발 범위 제안 (우선순위 기반)</h2>
+              <table>
+                <thead>
+                  <tr><th>구분</th><th>범위</th><th>처리</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><strong>1순위</strong> (7개)</td><td>AI 코치 백엔드 + 미션·감정일기·마음편지·금칙어·어드민 코치관리·터치보정</td><td><strong>이번 30일 포함</strong></td></tr>
+                  <tr><td><strong>2순위</strong> (11개)</td><td>elicitation·어드민 관리·캘린더 이모티콘·격언·회원가입 설문</td><td><strong>이번 30일 포함</strong></td></tr>
+                  <tr><td><strong>3순위</strong> (6개)</td><td>홈 구조·디자인 리스킨·온보딩·연출·nav·브랜딩 (개편 화면에 흡수)</td><td><strong>이번 30일 포함</strong></td></tr>
+                  <tr><td><strong>4순위</strong> (11개)</td><td>양방향 마음편지·이벤트 로그 분석·콘텐츠 관리·격언 AI 자동화·지난 기록</td><td>월 유지보수 단계 협의</td></tr>
+                </tbody>
+              </table>
+              <blockquote>완성도(1순위 평가 기준)를 최우선으로, 1~3순위 24개 기능을 본 기간 내 완성도 있게 납품합니다. 규모가 큰 4순위는 무리한 동시 진행 대신 월 단위 유지보수로 안정적으로 이어가는 것을 제안드립니다.</blockquote>
 
               <h2>제안 포인트</h2>
               <p><strong>1. AI 대화 파이프라인 고도화 경험.</strong> OpenAI API 기반의 AI 분석·요약 기능을 헬스케어 앱에 실제로 구현·운영한 경험이 있습니다. 대화 요약 저장(summary memory)과 컨텍스트 주입(context injection) 방식은 AI 코치의 맥락 유지와 응답 일관성을 높이는 핵심 패턴으로, 토큰 비용과 응답 품질의 균형을 고려해 설계합니다.</p>
               <p><strong>2. Flutter 앱 + Python 백엔드 통합 개발.</strong> Dart 기반 Flutter 앱 프론트엔드와 Python/Node 기반 AI 백엔드를 단일 인력이 일관되게 개발하여, 프론트-백엔드 간 인터페이스 정합성과 커뮤니케이션 오버헤드를 최소화합니다.</p>
               <p><strong>3. 레거시 코드 분석·리팩토링.</strong> 운영 중 서비스의 기존 코드를 우선 분석하여 영향 범위를 파악하고, 와이어프레임 기반 UI 개편을 기존 구조와 충돌 없이 안전하게 반영합니다.</p>
-              <p><strong>4. 고정 예산 최적화.</strong> 800만 원 고정 예산과 우선순위(완성도 우선) 조건에 맞춰, 1~2순위 핵심 기능을 완성도 있게 우선 구현하고 3~4순위는 잔여 예산·일정 범위에서 단계적으로 협의하는 현실적 스코프를 제안합니다.</p>
+              <p><strong>4. 우선순위 기반 스코프 최적화.</strong> 첨부 기능표의 35개 기능을 우선순위로 분해하여, 완성도 평가 기준에 맞춰 1~3순위 24개 기능을 본 기간 내 완성 포함하고, 규모가 큰 4순위(양방향 대화·AI 자동화·로그 분석 등)는 월 단위 유지보수로 안정적으로 이어가는 현실적이고 책임 있는 스코프를 제안합니다.</p>
 
               <h2>사용 기술 및 툴</h2>
               <h3>개발 기술</h3>
@@ -308,11 +324,11 @@
                   <tr><th>구분</th><th>항목</th><th>수량</th><th>공수</th><th>금액</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td>분석/설계</td><td>레거시 코드 분석, AI 파이프라인 설계, 스코프 확정</td><td>1식</td><td>3 M/D</td><td>900,000원</td></tr>
-                  <tr><td>프론트엔드</td><td>Flutter UI 개편 (홈·미션·일기 + 공통 컴포넌트)</td><td>1식</td><td>8 M/D</td><td>2,500,000원</td></tr>
-                  <tr><td>백엔드(AI)</td><td>대화 요약 저장 · 파이프라인 주입 · OpenAI 연동 고도화</td><td>1식</td><td>6 M/D</td><td>1,900,000원</td></tr>
-                  <tr><td>관리자 웹</td><td>관리자 페이지 기능 추가</td><td>1식</td><td>3 M/D</td><td>900,000원</td></tr>
-                  <tr><td>QA/배포</td><td>통합 테스트, 디바이스 QA, 배포 지원</td><td>1식</td><td>2 M/D</td><td>600,000원</td></tr>
+                  <tr><td>분석/설계</td><td>레거시 분석 + 우선순위 35개 기능 스코프 확정, AI 파이프라인 설계</td><td>1식</td><td>3 M/D</td><td>900,000원</td></tr>
+                  <tr><td>1순위 핵심</td><td>AI 코치 백엔드(메모리·파이프라인) + 미션·감정일기·마음편지·금칙어 + 어드민 코치관리</td><td>1식</td><td>9 M/D</td><td>2,800,000원</td></tr>
+                  <tr><td>2순위</td><td>입력 elicitation·어드민 관리(AI코치/미션/격언)·캘린더 이모티콘·격언·회원가입 설문</td><td>1식</td><td>6 M/D</td><td>1,900,000원</td></tr>
+                  <tr><td>3순위 UI</td><td>홈 구조 변경·디자인 리스킨·온보딩·연출·브랜딩 교체</td><td>1식</td><td>2 M/D</td><td>600,000원</td></tr>
+                  <tr><td>QA/배포</td><td>통합 테스트, Android/iOS QA, 스토어 반영 지원</td><td>1식</td><td>2 M/D</td><td>600,000원</td></tr>
                 </tbody>
                 <tfoot>
                   <tr><th colspan="4">합계 (VAT 별도)</th><th>6,800,000원</th></tr>
@@ -320,7 +336,7 @@
               </table>
 
               <h2>산정 근거</h2>
-              <p>공고에 명시된 고정 예산(800만 원)과 우선순위(완성도 우선) 조건을 반영하여, 핵심 과업 범위를 완성도 있게 수행할 수 있는 현실적 금액으로 산정하였습니다. 기획·디자인·와이어프레임이 클라이언트 측에서 제공되는 점을 반영하여 디자인 공수는 제외하였으며, 개발(프론트엔드·AI 백엔드·관리자 웹) 및 QA에 집중 배분하였습니다.</p>
+              <p>본 견적은 첨부 우선순위 기능표의 <strong>1~3순위 24개 기능</strong>을 완성 포함하는 기준으로 산정하였으며, 고정 예산(800만 원) 대비 경쟁력 있는 금액으로 제안합니다. 기획·디자인·와이어프레임이 클라이언트 측에서 제공되는 점을 반영하여 디자인 공수는 제외하였고, 개발(AI 백엔드·앱 UI·어드민) 및 QA에 집중 배분하였습니다. 규모가 큰 4순위 기능은 본 견적에서 제외하고 월 단위 유지보수로 별도 협의합니다.</p>
 
               <h2>포함 사항</h2>
               <ul>
@@ -348,13 +364,13 @@
               <h1>공수계산서</h1>
               <blockquote>기능별 개발 공수(Man-Day)를 산출하여 일정과 비용의 근거를 제시합니다.</blockquote>
 
-              <h2>공수 요약</h2>
+              <h2>공수 요약 (우선순위 기준)</h2>
               <table>
                 <tr><th>구분</th><th>공수 (M/D)</th><th>비율</th></tr>
                 <tr><td>분석/설계</td><td>3 M/D</td><td>14%</td></tr>
-                <tr><td>프론트엔드 (Flutter)</td><td>8 M/D</td><td>36%</td></tr>
-                <tr><td>백엔드 (Python AI)</td><td>6 M/D</td><td>27%</td></tr>
-                <tr><td>관리자 웹</td><td>3 M/D</td><td>14%</td></tr>
+                <tr><td>1순위 핵심 기능 (7개)</td><td>9 M/D</td><td>41%</td></tr>
+                <tr><td>2순위 기능 (11개)</td><td>6 M/D</td><td>27%</td></tr>
+                <tr><td>3순위 UI 개편 (6개)</td><td>2 M/D</td><td>9%</td></tr>
                 <tr><td>QA/배포</td><td>2 M/D</td><td>9%</td></tr>
                 <tr><th>합계</th><th>22 M/D</th><th>100%</th></tr>
               </table>
@@ -362,19 +378,22 @@
               <h2>기능별 상세 공수</h2>
               <table>
                 <thead>
-                  <tr><th>기능</th><th>세부 작업</th><th>담당</th><th>공수 (M/D)</th></tr>
+                  <tr><th>우선순위</th><th>영역 · 기능</th><th>담당</th><th>공수 (M/D)</th></tr>
                 </thead>
                 <tbody>
                   <tr><td rowspan="2">분석/설계</td><td>레거시 코드 분석 및 영향 범위 파악</td><td>공통</td><td>1.5</td></tr>
-                  <tr><td>AI 파이프라인 설계 + 엑셀 우선순위 스코프 매핑</td><td>공통</td><td>1.5</td></tr>
-                  <tr><td rowspan="3">AI 코치 백엔드</td><td>대화 요약 저장 로직 (summary memory) 구현</td><td>백엔드</td><td>2.5</td></tr>
-                  <tr><td>요약 컨텍스트 파이프라인 주입 (context injection)</td><td>백엔드</td><td>2</td></tr>
-                  <tr><td>OpenAI 프롬프트·응답 처리 고도화 및 튜닝</td><td>백엔드</td><td>1.5</td></tr>
-                  <tr><td rowspan="3">앱 UI 개편</td><td>홈 화면 개편 (와이어프레임 기반)</td><td>프론트엔드</td><td>3</td></tr>
-                  <tr><td>미션 화면 개편</td><td>프론트엔드</td><td>2.5</td></tr>
-                  <tr><td>일기 화면 개편 + 공통 컴포넌트 정리</td><td>프론트엔드</td><td>2.5</td></tr>
-                  <tr><td>관리자 웹</td><td>관리자 페이지 기능 추가 (운영/모니터링)</td><td>프론트엔드</td><td>3</td></tr>
-                  <tr><td>QA/배포</td><td>통합 테스트, Android/iOS 디바이스 QA, 배포 지원</td><td>공통</td><td>2</td></tr>
+                  <tr><td>AI 파이프라인 설계 + 우선순위 35개 기능 스코프 확정</td><td>공통</td><td>1.5</td></tr>
+                  <tr><td rowspan="6">1순위</td><td>AI 코치 백엔드 — 메모리 v1(대화 요약 저장·주입)</td><td>백엔드</td><td>2.5</td></tr>
+                  <tr><td>AI 코치 — 답변 파이프라인(few-shot·기법 스니펫) + 경량 2단계</td><td>백엔드</td><td>2.5</td></tr>
+                  <tr><td>오늘의 미션 UI 개편 (가변 박스·체크 분리·편집모드·오작동 수정)</td><td>프론트엔드</td><td>1.5</td></tr>
+                  <tr><td>감정일기 작성 플로우 + 마음편지 신고·어드민 처리</td><td>풀스택</td><td>1.5</td></tr>
+                  <tr><td>금칙어 필터 + 어드민 사전 관리</td><td>풀스택</td><td>0.5</td></tr>
+                  <tr><td>어드민 코치 관리 + 터치 범위 보정</td><td>풀스택</td><td>0.5</td></tr>
+                  <tr><td rowspan="3">2순위</td><td>입력 elicitation(칩/질문) + 글자수 제한 완화</td><td>풀스택</td><td>1.5</td></tr>
+                  <tr><td>어드민 관리(AI코치·미션·격언) + 캘린더 이모티콘·격언 개선</td><td>풀스택</td><td>3</td></tr>
+                  <tr><td>회원가입 척도 문항·설문 DB 점검·기본코치 변경</td><td>풀스택</td><td>1.5</td></tr>
+                  <tr><td>3순위</td><td>홈 구조 변경·디자인 리스킨·온보딩·연출(lottie)·nav 제거·브랜딩 교체</td><td>프론트엔드</td><td>2</td></tr>
+                  <tr><td>QA/배포</td><td>통합 테스트, Android/iOS 디바이스 QA, 스토어 반영 지원</td><td>공통</td><td>2</td></tr>
                 </tbody>
               </table>
 
@@ -384,6 +403,7 @@
                 <li>주 5일 근무 기준</li>
                 <li>버퍼 10~15% 포함</li>
                 <li>기획·디자인·와이어프레임은 클라이언트 제공 → 디자인 공수 제외</li>
+                <li>1~3순위 24개 기능 포함 기준 / 4순위 11개 기능은 월 유지보수 별도 협의</li>
                 <li>유사 프로젝트 수행 경험 기반 효율적 개발</li>
               </ul>
             </article>
@@ -411,25 +431,40 @@
                 </tbody>
               </table>
 
-              <h2>3. 기능 요구사항</h2>
-              <h3>3.1 AI 코치 백엔드 고도화 (Python · OpenAI)</h3>
+              <h2>3. 기능 요구사항 (우선순위 기능표 기준)</h2>
+              <h3>3.1 [1순위] 핵심 기능 — 본 기간 포함</h3>
               <ul>
-                <li><strong>[필수]</strong> 대화 요약 저장 — 대화 세션을 요약하여 저장하고, 장기 맥락(summary memory)으로 관리</li>
-                <li><strong>[필수]</strong> 파이프라인 주입 — 저장된 요약을 프롬프트 컨텍스트에 주입하여 AI 코치의 맥락 유지력 향상</li>
-                <li><strong>[필수]</strong> OpenAI 프롬프트·응답 처리 로직 고도화 (응답 품질·토큰 효율 균형)</li>
-                <li><strong>[선택]</strong> 요약 품질·안전성(민감 정보) 가드레일 보강</li>
+                <li><strong>AI 코치 백엔드 고도화</strong> — 메모리 v1(대화 요약 저장·주입) + 코치별 few-shot·기법 스니펫 답변 파이프라인(주입/선택) + 경량 2단계(입력분석→생성) 구조 <em>(클라 제공: 예시·기법 콘텐츠)</em></li>
+                <li><strong>오늘의 미션 UI 개편</strong> — 길이별 박스 가변, 전체보기/체크 분리(체크박스 우측), 편집 모드 figma 시안 일치, 편집 진입 시 체크 오작동 수정 <em>(figma)</em></li>
+                <li><strong>감정일기 작성 플로우</strong> — 작성 아이콘·저장·수정·닫기 버튼, 이모티콘 선택 <em>(figma)</em></li>
+                <li><strong>마음편지 신고 + 어드민 처리</strong> — 신고 버튼 → 어드민 신고목록 조회 → 게시글 삭제/비공개 처리 <em>(figma)</em></li>
+                <li><strong>금칙어 필터 + 어드민 관리</strong> — 입력 필터 적용 + 어드민 사전(단어) 관리</li>
+                <li><strong>어드민 코치 추가 관리</strong> — 코치 등록·관리</li>
+                <li><strong>UI/UX 터치 범위 보정</strong> — 히트영역 확대</li>
               </ul>
-              <h3>3.2 앱 UI 개편 (Flutter · Dart)</h3>
+              <h3>3.2 [2순위] 기능 확장 — 본 기간 포함</h3>
               <ul>
-                <li><strong>[필수]</strong> 홈 화면 개편 (제공 와이어프레임 기반)</li>
-                <li><strong>[필수]</strong> 미션 화면 개편</li>
-                <li><strong>[필수]</strong> 일기 화면 개편 및 공통 컴포넌트 정리</li>
-                <li><strong>[선택]</strong> 화면 전환·인터랙션 디테일 개선</li>
+                <li><strong>AI 코치</strong> — 입력 elicitation UI(칩/질문 2~3개 랜덤 표시·연동), 입력 글자수 제한(30자) 완화/해제</li>
+                <li><strong>어드민</strong> — AI 코치 칩/질문 목록 관리, 미션 풀 편집·관리(엑셀 업로드 등), 격언 배경 이미지 등록·교체·글씨 색 관리</li>
+                <li><strong>감정일기</strong> — 캘린더에 일기 이모티콘 매핑 표시 <em>(figma)</em></li>
+                <li><strong>오늘의 격언</strong> — 길이별 박스 자동 조정·텍스트 잘림 해소, 지난 격언 이미지 열람</li>
+                <li><strong>회원가입</strong> — 첫인상 설문 척도 문항 수정, 설문 응답↔DB 연동·적재 점검, 기본코치 기본값 변경(클라우드→리버)</li>
               </ul>
-              <h3>3.3 관리자 웹</h3>
+              <h3>3.3 [3순위] UI/브랜딩 리뉴얼 — 본 기간 포함 (개편 화면에 흡수)</h3>
               <ul>
-                <li><strong>[필수]</strong> 운영에 필요한 관리자 페이지 기능 추가</li>
-                <li><strong>[선택]</strong> AI 대화 로그·요약 모니터링 뷰</li>
+                <li><strong>홈 화면 구조 변경</strong> — figma대로 재구성 <em>(figma)</em></li>
+                <li><strong>디자인 톤 적용/리스킨</strong> — figma대로(가능 시 개편 화면에 흡수)</li>
+                <li><strong>온보딩 시나리오 화면</strong> — figma대로 구현</li>
+                <li><strong>출석/로딩 연출</strong> — 에셋(lottie 등) 적용</li>
+                <li><strong>커뮤니티 nav 제거</strong> + <strong>앱명·로고 교체</strong> (에셋 교체 + 스토어 반영)</li>
+              </ul>
+              <h3>3.4 [4순위] 후속 고도화 — 월 유지보수 단계 협의</h3>
+              <ul>
+                <li>마음편지 양방향 대화(답장 구조), 비공개/익명 사후 수정, 익명 시 코치 프로필 이미지, 종료 시 만족도 모달</li>
+                <li>이벤트 로그 DB 적재 + 어드민 조회, 사용자 관리, 콘텐츠 등록·관리</li>
+                <li>오늘의 격언 배경 AI 자동 생성·선정 알고리즘</li>
+                <li>지난 기록 — 지난 미션(날짜별 묶음)·지난 일기(월별·연도별) 열람</li>
+                <li>콘텐츠 기능 추가 (범위 미정 — 협의 후 결정)</li>
               </ul>
 
               <h2>4. 비기능 요구사항</h2>
@@ -452,7 +487,7 @@
               <ul>
                 <li>신규 기획 및 와이어프레임 제작 (클라이언트 제공)</li>
                 <li>UI 디자인 에셋 제작 (클라이언트 제공)</li>
-                <li>엑셀 우선순위 중 예산·일정을 초과하는 후순위(3~4순위) 항목 — 잔여 범위 내 단계적 협의</li>
+                <li>우선순위 4순위 11개 기능(양방향 마음편지, 이벤트 로그 분석, 콘텐츠 관리, 격언 AI 자동화, 지난 기록 등) — 월 단위 유지보수로 단계적 협의</li>
                 <li>외부 유료 API 사용료 및 서버 인프라 비용</li>
               </ul>
             </article>
@@ -472,11 +507,11 @@
                   <tr><th>단계</th><th>기간</th><th>주요 산출물</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td>Phase 1: 분석/설계</td><td>Day 1–5</td><td>레거시 분석 리포트, AI 파이프라인 설계서, 확정 스코프(우선순위 매핑)</td></tr>
-                  <tr><td>Phase 2: AI 백엔드 고도화</td><td>Day 6–16</td><td>대화 요약 저장·파이프라인 주입 모듈, OpenAI 연동 고도화, 관리자 API</td></tr>
-                  <tr><td>Phase 3: 앱 UI 개편</td><td>Day 11–25</td><td>홈·미션·일기 화면 개편, 공통 컴포넌트</td></tr>
-                  <tr><td>Phase 4: 관리자 웹 + 통합</td><td>Day 22–27</td><td>관리자 페이지 기능, FE-BE 통합</td></tr>
-                  <tr><td>Phase 5: QA/배포</td><td>Day 28–30</td><td>통합 테스트, 디바이스 QA, 배포 및 소스 이관</td></tr>
+                  <tr><td>Phase 1: 분석/설계</td><td>Day 1–5</td><td>레거시 분석 리포트, 35개 기능 우선순위 스코프 확정, AI 파이프라인 설계서</td></tr>
+                  <tr><td>Phase 2: 1순위 핵심</td><td>Day 6–16</td><td>AI 코치 백엔드(메모리·파이프라인), 미션·감정일기·마음편지·금칙어, 어드민 코치관리</td></tr>
+                  <tr><td>Phase 3: 2순위 기능</td><td>Day 14–23</td><td>elicitation, 어드민 관리(AI코치/미션/격언), 캘린더 이모티콘, 격언, 회원가입 설문</td></tr>
+                  <tr><td>Phase 4: 3순위 UI/브랜딩</td><td>Day 22–27</td><td>홈 구조 변경, 디자인 리스킨, 온보딩, 연출, nav 제거, 앱명·로고 교체</td></tr>
+                  <tr><td>Phase 5: QA/배포</td><td>Day 28–30</td><td>통합 테스트, Android/iOS QA, 스토어 반영, 소스 이관</td></tr>
                 </tbody>
               </table>
             </article>
@@ -489,36 +524,36 @@
                 <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 1</p>
                 <h4 class="text-base font-semibold text-slate-900">분석 및 설계</h4>
                 <p class="mb-1 text-xs font-semibold text-amber-600">Day 1–5</p>
-                <p class="text-sm leading-7 text-slate-600">기존 앱·백엔드 코드 분석, 영향 범위 파악, AI 대화 요약·주입 파이프라인 설계, 첨부 엑셀 우선순위 기반 개발 스코프 확정</p>
+                <p class="text-sm leading-7 text-slate-600">기존 앱·백엔드 코드 분석, 영향 범위 파악, AI 대화 요약·주입 파이프라인 설계, 첨부 우선순위 기능표(35개) 기반 개발 스코프 확정</p>
                 <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
                   <li>산출물: 레거시 분석 리포트, AI 파이프라인 설계서, 확정 스코프 문서</li>
                 </ul>
               </div>
               <div class="timeline-item">
                 <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 2</p>
-                <h4 class="text-base font-semibold text-slate-900">AI 코치 백엔드 고도화</h4>
+                <h4 class="text-base font-semibold text-slate-900">1순위 핵심 기능</h4>
                 <p class="mb-1 text-xs font-semibold text-amber-600">Day 6–16</p>
-                <p class="text-sm leading-7 text-slate-600">대화 요약 저장(summary memory) 로직, 요약 컨텍스트 파이프라인 주입, OpenAI 프롬프트·응답 처리 고도화, 관리자용 API 구현</p>
+                <p class="text-sm leading-7 text-slate-600">AI 코치 백엔드(메모리 v1: 대화 요약 저장·주입 + few-shot·기법 스니펫 파이프라인 + 경량 2단계), 오늘의 미션 UI 개편, 감정일기 작성 플로우, 마음편지 신고·어드민 처리, 금칙어 필터·사전, 어드민 코치 관리, 터치 보정</p>
                 <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
-                  <li>산출물: AI 백엔드 모듈, API 명세서, 요약/주입 동작 데모</li>
+                  <li>산출물: AI 백엔드 모듈, 핵심 화면 빌드, 어드민 처리 기능, API 명세서</li>
                 </ul>
               </div>
               <div class="timeline-item">
                 <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 3</p>
-                <h4 class="text-base font-semibold text-slate-900">앱 UI 개편</h4>
-                <p class="mb-1 text-xs font-semibold text-amber-600">Day 11–25</p>
-                <p class="text-sm leading-7 text-slate-600">와이어프레임 기반 홈·미션·일기 화면 개편, 공통 컴포넌트 정리, AI 코치 대화 UI 연동</p>
+                <h4 class="text-base font-semibold text-slate-900">2순위 기능 확장</h4>
+                <p class="mb-1 text-xs font-semibold text-amber-600">Day 14–23</p>
+                <p class="text-sm leading-7 text-slate-600">입력 elicitation(칩/질문) + 글자수 완화, 어드민 관리(AI코치·미션·격언), 감정일기 캘린더 이모티콘, 오늘의 격언 개선·지난 격언, 회원가입 척도·설문 DB 점검·기본코치 변경</p>
                 <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
-                  <li>산출물: 개편된 Flutter 화면, 공통 컴포넌트, 화면별 동작 빌드</li>
+                  <li>산출물: 확장 기능 빌드, 어드민 관리 화면, 설문 DB 점검 결과</li>
                 </ul>
               </div>
               <div class="timeline-item">
                 <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 4</p>
-                <h4 class="text-base font-semibold text-slate-900">관리자 웹 + 통합</h4>
+                <h4 class="text-base font-semibold text-slate-900">3순위 UI/브랜딩 리뉴얼</h4>
                 <p class="mb-1 text-xs font-semibold text-amber-600">Day 22–27</p>
-                <p class="text-sm leading-7 text-slate-600">관리자 페이지 기능 추가, 프론트엔드-백엔드 통합, 엔드투엔드 연동 점검</p>
+                <p class="text-sm leading-7 text-slate-600">홈 화면 구조 변경(figma), 디자인 톤 리스킨, 온보딩 시나리오, 출석/로딩 연출(lottie), 커뮤니티 nav 제거, 앱명·로고 교체 및 통합 점검</p>
                 <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
-                  <li>산출물: 관리자 웹 기능, 통합 테스트 결과</li>
+                  <li>산출물: 리뉴얼된 화면, 브랜딩 교체 빌드, 통합 테스트 결과</li>
                 </ul>
               </div>
               <div class="timeline-item">
@@ -541,10 +576,10 @@
                   <tr><th>마일스톤</th><th>시점</th><th>검수 기준</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td>M1: 설계·스코프 확정</td><td>Day 5</td><td>AI 파이프라인 설계서 및 확정 스코프 승인</td></tr>
-                  <tr><td>M2: AI 백엔드 고도화 완료</td><td>Day 16</td><td>요약 저장·주입 동작 확인, 대화 품질 개선 검증</td></tr>
-                  <tr><td>M3: UI 개편 완료</td><td>Day 25</td><td>홈·미션·일기 화면 와이어프레임 일치 확인</td></tr>
-                  <tr><td>M4: 최종 납품</td><td>Day 30</td><td>통합 QA 통과, 소스 코드·문서 이관 완료</td></tr>
+                  <tr><td>M1: 설계·스코프 확정</td><td>Day 5</td><td>35개 기능 우선순위 매핑 및 확정 스코프, AI 파이프라인 설계서 승인</td></tr>
+                  <tr><td>M2: 1순위 핵심 완료</td><td>Day 16</td><td>AI 코치 요약·주입 동작 확인, 미션·감정일기·마음편지·금칙어·어드민 검수</td></tr>
+                  <tr><td>M3: 2순위 완료</td><td>Day 23</td><td>elicitation·어드민 관리·격언·회원가입 설문 기능 검수</td></tr>
+                  <tr><td>M4: 3순위 UI + 최종 납품</td><td>Day 30</td><td>UI/브랜딩 리뉴얼 figma 일치, 통합 QA 통과, 소스·문서 이관 완료</td></tr>
                 </tbody>
               </table>
 
